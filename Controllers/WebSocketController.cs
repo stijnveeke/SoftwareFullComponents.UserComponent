@@ -33,12 +33,14 @@ namespace SoftwareFullComponents.LicenseComponent.Controllers
         {
             if (HttpContext.WebSockets.IsWebSocketRequest)
             {
+                _logger.LogInformation($"Attempting to get list of users");
                 using (var ws = await HttpContext.WebSockets.AcceptWebSocketAsync())
                 {
                     var users = await _userLogic.GetUsers();
 
                     foreach (var user in users)
                     {
+                        _logger.LogInformation($"Recieved user id: {user.user_id}");
                         var msg = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(user));
                         await ws.SendAsync(new ArraySegment<byte>(msg, 0, msg.Length), WebSocketMessageType.Text, false, CancellationToken.None);
                     }
@@ -56,10 +58,11 @@ namespace SoftwareFullComponents.LicenseComponent.Controllers
         {
             if (HttpContext.WebSockets.IsWebSocketRequest)
             {
+                _logger.LogInformation($"Attempting to get user id: {userId}");
                 using (var ws = await HttpContext.WebSockets.AcceptWebSocketAsync())
                 {
                     var user = await _userLogic.GetUser(userId);
-
+                    _logger.LogInformation($"Recieved user id: {user.user_id}");
                     var msg = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(user));
                     await ws.SendAsync(new ArraySegment<byte>(msg, 0, msg.Length), WebSocketMessageType.Text, false, CancellationToken.None);
                     await ws.CloseAsync(WebSocketCloseStatus.NormalClosure,"Finished", CancellationToken.None);                    
