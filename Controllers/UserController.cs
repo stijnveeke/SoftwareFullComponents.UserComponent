@@ -21,5 +21,11 @@ namespace SoftwareFullComponents.LicenseComponent.Controllers
         {
             return await _userLogic.GetUsers();
         }
+        
+        [HttpGet("{userId}")]
+        public async Task<UserRead> GetUsers(string userId)
+        {
+            return await _userLogic.GetUser(userId);
+        }
     }
 }
