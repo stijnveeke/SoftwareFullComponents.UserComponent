@@ -33,7 +33,7 @@ namespace SoftwareFullComponents.LicenseComponent.Controllers
         {
             if (HttpContext.WebSockets.IsWebSocketRequest)
             {
-                _logger.LogInformation($"Attempting to get list of users");
+                _logger.LogCritical($"Attempting to get list of users");
                 using (var ws = await HttpContext.WebSockets.AcceptWebSocketAsync())
                 {
                     var users = await _userLogic.GetUsers();
