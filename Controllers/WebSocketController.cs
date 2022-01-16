@@ -28,6 +28,44 @@ namespace SoftwareFullComponents.LicenseComponent.Controllers
             _userLogic = logic;
         }
 
+        [HttpGet("MultiUserCall")]
+        public async Task RequestedUsers()
+        {
+            if (HttpContext.WebSockets.IsWebSocketRequest)
+            {
+                using (var ws = await HttpContext.WebSockets.AcceptWebSocketAsync())
+                {
+                    var cts = new System.Threading.CancellationTokenSource();
+                    ArraySegment<byte> byteToSend = new ArraySegment<byte>(Encoding.UTF8.GetBytes("Shaking hands: Waiting for user-ids"));
+                    await ws.SendAsync(byteToSend, WebSocketMessageType.Text, false, cts.Token);
+                    
+                    var responseBuffer = new byte[1024];
+                    var offset = 0;
+                    var packet = 1024;
+
+                    while (true)
+                    {
+                        ArraySegment<byte> byteRecieved = new ArraySegment<byte>(responseBuffer, offset, packet);
+                        WebSocketReceiveResult response = await ws.ReceiveAsync(byteRecieved, cts.Token);
+                        var responseMessage = Encoding.UTF8.GetString(responseBuffer, offset, response.Count);
+
+                        if (response.EndOfMessage)
+                        {
+                            await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Agreeing to end this",
+                                CancellationToken.None);
+                            break;
+                        }
+                        
+                        var userId = responseMessage;
+                        var user = await _userLogic.GetUser(userId);
+                        var userbytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(user));
+                        ArraySegment<byte> userToSendInBytes = new ArraySegment<byte>(userbytes);
+                        await ws.SendAsync(userToSendInBytes, WebSocketMessageType.Text, false, cts.Token);
+                    }
+                }
+            }
+        }
+
         [HttpGet("User")]
         public async Task GetUsers()
         {
