@@ -26,6 +26,11 @@ namespace SoftwareFullComponent.UserComponent
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(c =>
+            {
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+                c.AddPolicy("AllowExposedXTotalCount", options => options.AllowAnyHeader().WithExposedHeaders("Access-Control-Expose-Headers"));
+            });
             services.AddControllers();
             services.AddScoped<IAuth0ApiCalls, Auth0ApiCalls>();
             services.AddScoped<UserLogicInterface, UserLogic>();
@@ -51,6 +56,7 @@ namespace SoftwareFullComponent.UserComponent
             app.UseWebSockets();
             app.UseRouting();
 
+            app.UseCors(builder => builder.AllowAnyMethod().AllowAnyOrigin().AllowAnyHeader());
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
