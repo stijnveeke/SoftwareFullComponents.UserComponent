@@ -20,11 +20,11 @@ jobs:
         with:
           dotnet-version: 5.0.x
       - name: Restore UserComponent dependencies
-        run: dotnet restore ./SoftwareFullComponents.UserComponent.csproj 
+        run: dotnet restore ./SoftwareFullComponent.UserComponent.csproj 
       - name: Build UserComponent
-        run: dotnet build ./SoftwareFullComponents.UserComponent.csproj --no-restore
+        run: dotnet build ./SoftwareFullComponent.UserComponent.csproj --no-restore
       - name: Test UserComponent
-        run: dotnet test ./SoftwareFullComponents.UserComponent.csproj --no-build --verbosity normal
+        run: dotnet test ./SoftwareFullComponent.UserComponent.csproj --no-build --verbosity normal
         
   push-to-hub:
     runs-on: 'ubuntu-latest'
@@ -102,6 +102,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"stijnveeke_SoftwareFullComponents.UserComponent" /o:"stijnveeke" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet build ./SoftwareFullComponents.UserComponent.csproj
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"stijnveeke_SoftwareFullComponent.UserComponent" /o:"stijnveeke" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          dotnet build ./SoftwareFullComponent.UserComponent.csproj
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
